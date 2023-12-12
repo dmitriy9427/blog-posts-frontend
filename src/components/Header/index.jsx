@@ -1,39 +1,48 @@
-import React from 'react';
-import Button from '@mui/material/Button';
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
 
-import styles from './Header.module.scss';
-import Container from '@mui/material/Container';
+import Button from "@mui/material/Button";
+
+import styles from "./Header.module.scss";
+import Container from "@mui/material/Container";
 
 export const Header = () => {
   const isAuth = false;
+  const link = useNavigate();
 
-  const onClickLogout = () => {};
+  const onClickLogout = () => {
+    link("/");
+  };
 
   return (
     <div className={styles.root}>
       <Container maxWidth="lg">
         <div className={styles.inner}>
-          <a className={styles.logo} href="/">
-            <div>ARCHAKOV BLOG</div>
-          </a>
+          <Link className={styles.logo} to="/">
+            <span>БЛОГ ПОСТОВ</span>
+          </Link>
           <div className={styles.buttons}>
             {isAuth ? (
               <>
-                <a href="/posts/create">
+                <Link to="/posts/create">
                   <Button variant="contained">Написать статью</Button>
-                </a>
-                <Button onClick={onClickLogout} variant="contained" color="error">
+                </Link>
+                <Button
+                  onClick={onClickLogout}
+                  variant="contained"
+                  color="error"
+                >
                   Выйти
                 </Button>
               </>
             ) : (
               <>
-                <a href="/login">
+                <Link to="/login">
                   <Button variant="outlined">Войти</Button>
-                </a>
-                <a href="/register">
+                </Link>
+                <Link to="/register">
                   <Button variant="contained">Создать аккаунт</Button>
-                </a>
+                </Link>
               </>
             )}
           </div>
