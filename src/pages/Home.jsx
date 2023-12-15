@@ -10,15 +10,15 @@ import { CommentsBlock } from "../components/CommentsBlock";
 import { fetchPosts, fetchTags } from "../redux/slices/posts";
 
 export const Home = () => {
-  const dispath = useDispatch();
+  const dispatch = useDispatch();
   const { posts, tags } = useSelector((state) => state.posts);
-
+  const userData = useSelector((state) => state.autch.data);
   const isPostStatus = posts.status === "Загрузка ...";
   const isTagsStatus = tags.status === "Загрузка ...";
 
   useEffect(() => {
-    dispath(fetchPosts());
-    dispath(fetchTags());
+    dispatch(fetchPosts());
+    dispatch(fetchTags());
   }, []);
 
   return (
@@ -33,21 +33,21 @@ export const Home = () => {
       </Tabs>
       <Grid container spacing={4}>
         <Grid xs={8} item>
-          {(isPostStatus ? [...Array(5)] : posts.items).map((obj, index) =>
+          {(isPostStatus ? [...Array(5)] : posts?.items).map((obj, index) =>
             isPostStatus ? (
               <Post isLoading={true} key={index} />
             ) : (
               <Post
                 id={obj._id}
                 key={obj._id}
-                title={obj.title}
-                imageUrl={obj.imageUrl}
-                user={obj.user}
-                createdAt={obj.user.createdAt}
+                title={obj?.title}
+                imageUrl={obj?.imageUrl}
+                user={obj?.user}
+                createdAt={obj?.user?.createdAt}
                 viewsCount={obj.viewsCount}
                 commentsCount={3}
-                tags={obj.tags}
-                isEditable
+                tags={obj?.tags}
+                isEditable={userData?._id === obj.user._id}
                 isLoading={false}
               />
             )

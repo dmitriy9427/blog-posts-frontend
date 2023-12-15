@@ -1,5 +1,6 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
 
 import mess from "../../images/message.svg";
 import pass from "../../images/password.svg";
@@ -7,8 +8,11 @@ import user from "../../images/user.svg";
 import regiser from "../../images/register.svg";
 
 import styles from "./Register.module.scss";
+import { fetchRegister } from "../../redux/slices/autch";
 
 function Register() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const {
     register,
     setError,
@@ -16,15 +20,22 @@ function Register() {
     formState: { errors, isValid },
   } = useForm({
     defaultValues: {
-      username: "",
-      email: "",
-      password: "",
+      username: "Дмитрий Иванов",
+      email: "pipkins.dima@mail.ru",
+      passwordHash: "1234",
     },
     mode: "all",
   });
 
-  const onSubmit = (value) => {
-    console.log(value);
+  const onSubmit = async (values) => {
+    const data = await dispatch(fetchRegister(values));
+    if (!data.payload) {
+      return alert("Не удалось зарегистрироваться!");
+    }
+    if ("token" in data.payload) {
+      window.localStorage.setItem("token", data.payload.token);
+      navigate("/");
+    }
   };
 
   return (
@@ -88,6 +99,7 @@ function Register() {
             </label>
             <button
               style={{ marginTop: `${errors ? "45px" : "65px"}` }}
+              disabled={isValid ? false : true}
               type="submit"
               className={styles.signin}
             >

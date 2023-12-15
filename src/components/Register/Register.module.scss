@@ -130,6 +130,11 @@
     cursor: pointer;
     background-color: darken($color: #0c21c1, $amount: 10);
   }
+
+  &:disabled {
+    background-color: #6a6e8e;
+    cursor: not-allowed;
+  }
 }
 
 .icons {

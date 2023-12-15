@@ -1,8 +1,8 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 
-import { fetchAutch } from "../../redux/slices/autch";
+import { fetchLogin } from "../../redux/slices/autch";
 
 import styles from "./Login.module.scss";
 import login from "../../images/login.svg";
@@ -14,6 +14,8 @@ import google from "../../images/google.svg";
 
 function Login() {
   const dispatch = useDispatch();
+  // const autchStatus = useSelector(autchSelector);
+  const navigate = useNavigate();
   const {
     formState: { errors, isValid },
     register,
@@ -22,16 +24,24 @@ function Login() {
   } = useForm({
     defaultValues: {
       email: "dimaryabov@mail.ru",
-      passwordHash: 1234,
+      passwordHash: "1234ddd",
     },
-    mode: "all",
+    mode: "onChange",
   });
 
-  const onSubmit = (values) => {
-    if (isValid) {
-      dispatch(fetchAutch(values));
+  console.log(setError);
+
+  const onSubmit = async (values) => {
+    const data = await dispatch(fetchLogin(values));
+    if (!data.payload) {
+      return alert("Не удалось авторизоваться!");
+    }
+    if ("token" in data.payload) {
+      window.localStorage.setItem("token", data.payload.token);
+      navigate("/");
     }
   };
+
   return (
     <div className={styles.window}>
       <div className={styles.div}>
@@ -76,10 +86,15 @@ function Login() {
                 {errors.passwordHash?.message}
               </span>
             </label>
-            <button type="submit" className={styles.signin}>
+            <button
+              disabled={isValid ? false : true}
+              type="submit"
+              className={styles.signin}
+            >
               Войти
             </button>
           </form>
+          <span>{}</span>
           <Link to={"/register"} className={styles.punkt}>
             Зарегистрировться.
           </Link>

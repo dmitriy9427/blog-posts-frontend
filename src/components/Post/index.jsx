@@ -10,6 +10,7 @@ import CommentIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
 import styles from "./Post.module.scss";
 import { UserInfo } from "../UserInfo";
 import { PostSkeleton } from "./Skeleton";
+import { autchSelector } from "../../redux/slices/autch";
 
 export const Post = ({
   id,

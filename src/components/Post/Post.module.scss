@@ -28,7 +28,8 @@ $blue: #4361ee;
 
 .image {
   width: 100%;
-  height: 300px;
+  max-height: 800px;
+  height: 100%;
   object-fit: cover;
 
   &Full {

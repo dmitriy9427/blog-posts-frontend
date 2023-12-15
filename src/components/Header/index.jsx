@@ -1,5 +1,8 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+
+import { autchSelector, outSession } from "../../redux/slices/autch";
 
 import Button from "@mui/material/Button";
 
@@ -7,11 +10,14 @@ import styles from "./Header.module.scss";
 import Container from "@mui/material/Container";
 
 export const Header = () => {
-  const isAuth = false;
-  const link = useNavigate();
+  const isAuth = useSelector(autchSelector);
+  const dispatch = useDispatch();
 
   const onClickLogout = () => {
-    link("/");
+    if (window.confirm("Вы действительно хотите выйти из аккаунта?")) {
+      dispatch(outSession());
+      window.localStorage.clear();
+    }
   };
 
   return (
@@ -24,7 +30,7 @@ export const Header = () => {
           <div className={styles.buttons}>
             {isAuth ? (
               <>
-                <Link to="/posts/create">
+                <Link to="/add-post">
                   <Button variant="contained">Написать статью</Button>
                 </Link>
                 <Button
