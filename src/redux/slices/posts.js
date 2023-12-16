@@ -1,12 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "../../axios";
 
-// export enum Status {
-//   LOADING = "Загрузка",
-//   SUCSESS = "Загружено",
-//   ERROR = "Ошибка",
-// }
-
 export const fetchPosts = createAsyncThunk("posts/fetchPost", async () => {
   const res = await axios.get("/posts");
   return res.data;
@@ -15,6 +9,16 @@ export const fetchPosts = createAsyncThunk("posts/fetchPost", async () => {
 export const fetchTags = createAsyncThunk("posts/fetchTags", async () => {
   const { data } = await axios.get("/tags");
   return data;
+});
+
+export const fetchDeletePost = createAsyncThunk(
+  "posts/fetchDeletePost",
+  async (id) => await axios.delete(`/posts/${id}`)
+);
+
+export const fetchGetTag = createAsyncThunk("posts/fetchGetTag", async (t) => {
+  const tag = await axios.get(`/tags/${t}`);
+  return tag;
 });
 
 const initialState = {
@@ -33,6 +37,7 @@ const postSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
+    // получение статей
     builder.addCase(fetchPosts.pending, (state) => {
       state.posts.items = [];
       state.posts.status = "Загрузка ...";
@@ -45,6 +50,7 @@ const postSlice = createSlice({
       state.posts.items = [];
       state.posts.status = "Ошибка получения статей.";
     });
+    // получение тэгов
     builder.addCase(fetchTags.pending, (state) => {
       state.tags.items = [];
       state.tags.status = "Загрузка ...";
@@ -56,6 +62,31 @@ const postSlice = createSlice({
     builder.addCase(fetchTags.rejected, (state) => {
       state.tags.items = [];
       state.tags.status = "Ошибка получения тэгов.";
+    });
+    // удаление статьи
+    builder.addCase(fetchDeletePost.pending, (state, action) => {
+      state.posts.items = state.posts.items.filter(
+        (obj) => obj._id !== action.meta.arg
+      );
+    });
+    //полуение статей по тэгу
+    builder.addCase(fetchGetTag.pending, (state) => {
+      state.posts.items = [];
+      state.posts.status = "Загрузка ...";
+    });
+    builder.addCase(fetchGetTag.fulfilled, (state, action) => {
+      state.posts.items.map((obj) => {
+        for (let i in obj.tags) {
+          if (obj.tags[i] === action.payload) {
+            state.posts.items = obj;
+          }
+        }
+      });
+      state.posts.status = "Загружено!";
+    });
+    builder.addCase(fetchGetTag.rejected, (state) => {
+      state.tags.items = [];
+      state.posts.status = "Ошибка получения статей.";
     });
   },
 });

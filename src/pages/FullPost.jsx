@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-
+import Markdown from "react-markdown";
 import { Post } from "../components/Post";
 import { Index } from "../components/AddComment";
 import { CommentsBlock } from "../components/CommentsBlock";
 import axios from "../axios";
 
 export const FullPost = () => {
-  const [data, setData] = useState();
+  const [data, setData] = useState(null);
   const [isLoading, setLoading] = useState(true);
 
   const { id } = useParams();
@@ -16,6 +16,7 @@ export const FullPost = () => {
     axios
       .get(`/posts/${id}`)
       .then((res) => {
+        console.log(res.data);
         setData(res.data);
         setLoading(false);
       })
@@ -31,14 +32,16 @@ export const FullPost = () => {
         <Post
           id={data._id}
           title={data.title}
-          imageUrl={data?.imageUrl}
+          imageUrl={
+            data.imageUrl ? `http://localhost:8888${data.imageUrl}` : ""
+          }
           user={data.user}
           createdAt={data.user.createdAt}
           viewsCount={data.viewsCount}
           commentsCount={3}
           tags={data.tags}
         >
-          <p>{data.text}</p>
+          <Markdown children={data.text}></Markdown>
         </Post>
       ) : (
         <Post isLoading={isLoading} isFullPost />

@@ -5,7 +5,7 @@ import Tab from "@mui/material/Tab";
 import Grid from "@mui/material/Grid";
 
 import { Post } from "../components/Post";
-import { TagsBlock } from "../components/TagsBlock";
+import { TagsBlock } from "../components/TagsBlock/TagsBlock";
 import { CommentsBlock } from "../components/CommentsBlock";
 import { fetchPosts, fetchTags } from "../redux/slices/posts";
 
@@ -13,6 +13,7 @@ export const Home = () => {
   const dispatch = useDispatch();
   const { posts, tags } = useSelector((state) => state.posts);
   const userData = useSelector((state) => state.autch.data);
+
   const isPostStatus = posts.status === "Загрузка ...";
   const isTagsStatus = tags.status === "Загрузка ...";
 
@@ -28,8 +29,8 @@ export const Home = () => {
         value={0}
         aria-label="basic tabs example"
       >
-        <Tab label="Новые" />
-        <Tab label="Популярные" />
+        <Tab style={{ color: "white" }} label="Новые" />
+        <Tab style={{ color: "white" }} label="Популярные" />
       </Tabs>
       <Grid container spacing={4}>
         <Grid xs={8} item>
@@ -39,15 +40,16 @@ export const Home = () => {
             ) : (
               <Post
                 id={obj._id}
-                key={obj._id}
                 title={obj?.title}
-                imageUrl={obj?.imageUrl}
+                imageUrl={
+                  obj.imageUrl ? `http://localhost:8888${obj.imageUrl}` : ""
+                }
                 user={obj?.user}
                 createdAt={obj?.user?.createdAt}
                 viewsCount={obj.viewsCount}
                 commentsCount={3}
                 tags={obj?.tags}
-                isEditable={userData?._id === obj.user._id}
+                isEditable={userData?._id === obj?.user._id}
                 isLoading={false}
               />
             )

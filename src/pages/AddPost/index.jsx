@@ -1,5 +1,5 @@
-import React, { useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useRef, useEffect } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
@@ -10,18 +10,26 @@ import "easymde/dist/easymde.min.css";
 import styles from "./AddPost.module.scss";
 
 export const AddPost = () => {
+  const { id } = useParams();
+  const isEditing = Boolean(id);
   const refFileImage = useRef(null);
+  const navigate = useNavigate();
   const [imageUrl, setImageUrl] = useState("");
   const [text, setText] = useState("");
   const [title, setTitle] = useState("");
   const [tags, setTags] = useState("");
 
   const handleChangeFile = async (event) => {
-    const formData = new FormData();
-    const files = event.target.files[0];
-    formData.append("image", files);
-    const { data } = await axios.post("/uploads", formData);
-    setImageUrl(data.url);
+    try {
+      const formData = new FormData();
+      const files = event.target.files[0];
+      formData.append("image", files);
+      const { data } = await axios.post("/uploads", formData);
+      setImageUrl(data.url);
+    } catch (error) {
+      console.log(error);
+      alert("Ошибка загрузки файла.");
+    }
   };
 
   const onClickRemoveImage = () => {
@@ -32,6 +40,27 @@ export const AddPost = () => {
     setText(value);
   }, []);
 
+  const onSubmit = async () => {
+    try {
+      const field = {
+        title,
+        text,
+        imageUrl,
+        tags,
+      };
+
+      const res = isEditing
+        ? await axios.patch(`/posts/${id}`, field)
+        : await axios.post("/posts", field);
+
+      const postId = isEditing ? id : res.data._id;
+
+      navigate(`/posts/${postId}`);
+    } catch (error) {
+      console.log(error);
+      alert("Ошибка при создании статьи!");
+    }
+  };
   const options = React.useMemo(
     () => ({
       spellChecker: false,
@@ -46,6 +75,23 @@ export const AddPost = () => {
     }),
     []
   );
+
+  useEffect(() => {
+    if (id) {
+      axios
+        .get(`/posts/${id}`)
+        .then(({ data }) => {
+          setTitle(data.title);
+          setText(data.text);
+          setTags(data.tags.join(", "));
+          setImageUrl(data.imageUrl);
+        })
+        .catch((err) => {
+          console.log(err);
+          alert("Не удалось получить статью.");
+        });
+    }
+  }, []);
 
   return (
     <Paper style={{ padding: 30 }}>
@@ -73,7 +119,7 @@ export const AddPost = () => {
           </Button>
           <img
             className={styles.image}
-            src={`http://localhost:8888/api${imageUrl}`}
+            src={`http://localhost:8888${imageUrl}`}
             alt="Uploaded"
           />
         </>
@@ -104,8 +150,13 @@ export const AddPost = () => {
         options={options}
       />
       <div className={styles.buttons}>
-        <Button size="large" variant="contained">
-          Опубликовать
+        <Button
+          type="submit"
+          onClick={onSubmit}
+          size="large"
+          variant="contained"
+        >
+          {isEditing ? "Обновить" : "Опубликовать"}
         </Button>
         <Link to="/">
           <Button size="large">Отмена</Button>

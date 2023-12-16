@@ -1,0 +1,47 @@
+.tagsBlock {
+  background-color: rgb(76, 76, 76);
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-size: 25px;
+  color: #e5e2e2;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.listItem {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  row-gap: 5px;
+  color: whitesmoke;
+  text-decoration: none;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+
+  &:hover {
+    background-color: darken($color: #a8a7a7, $amount: 5);
+    border-radius: 10px;
+    padding-left: 5px;
+    color: whitesmoke;
+  }
+}
+
+.img {
+  margin-right: auto;
+  transform: rotate(-0.01turn);
+}
+
+.span {
+  display: flex;
+  justify-content: start;
+  margin-right: auto;
+}
